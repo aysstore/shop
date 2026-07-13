@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /checkout/
+Disallow: /api/
+Disallow: /products?*
+Disallow: /search?*
+
+Sitemap: https://ays-store.com/sitemap.xml
+Crawl-delay: 5
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 2
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 3
