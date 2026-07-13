@@ -1,0 +1,56 @@
+{
+  "name": "ays",
+  "version": "1.0.0",
+  "description": "🛍️ فروشگاه اینترنتی آیس - کامل و امن با MERN Stack",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "server": "nodemon server/server.js",
+    "client": "npm start --prefix client",
+    "client-install": "npm install --prefix client",
+    "server-install": "npm install --prefix server",
+    "install-all": "npm install && npm run client-install && npm run server-install",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "npm run build --prefix client",
+    "build:server": "npm run build --prefix server",
+    "build:all": "npm run build && npm run build:server",
+    "test": "npm run test --prefix server && npm run test --prefix client",
+    "seed": "npm run seed --prefix server",
+    "lint": "npm run lint --prefix server && npm run lint --prefix client",
+    "format": "prettier --write .",
+    "clean": "rm -rf node_modules client/node_modules server/node_modules",
+    "postinstall": "npm run install-all",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+  },
+  "keywords": [
+    "ecommerce",
+    "mern",
+    "react",
+    "node",
+    "express",
+    "mongodb",
+    "shop",
+    "store",
+    "online-shop",
+    "shopping-cart"
+  ],
+  "author": "Ays Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.3",
+    "prettier": "^3.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/ays-ecommerce.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/ays-ecommerce/issues"
+  },
+  "homepage": "https://github.com/yourusername/ays-ecommerce#readme"
+}
