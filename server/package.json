@@ -1,7 +1,7 @@
 {
-  "name": "ays",
+  "name": "ays-server",
   "version": "1.0.0",
-  "description": "فروشگاه اینترنتی آیس",
+  "description": "⚙️ Backend فروشگاه اینترنتی آیس - Node.js/Express",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -32,7 +32,7 @@
   "devDependencies": {
     "eslint": "^8.55.0",
     "jest": "^29.7.0",
-    "nodemon": "^3.0.1",
+    "nodemon": "^3.0.3",
     "supertest": "^6.3.3"
   },
   "engines": {
@@ -43,7 +43,9 @@
     "ecommerce",
     "api",
     "express",
-    "mongodb"
+    "mongodb",
+    "nodejs",
+    "backend"
   ],
   "author": "Ays Team",
   "license": "MIT"
