@@ -269,4 +269,156 @@ exports.cancelOrder = async (req, res) => {
     if (order.status === 'delivered') {
       return res.status(400).json({
         success: false,
-        message: 'سفارش تحویل داده شده و قابل لغو
+        message: 'سفارش تحویل داده شده و قابل لغو نیست'
+      });
+    }
+
+    if (order.status === 'cancelled') {
+      return res.status(400).json({
+        success: false,
+        message: 'این سفارش قبلاً لغو شده است'
+      });
+    }
+
+    // برگرداندن موجودی
+    for (const item of order.items) {
+      const product = await Product.findById(item.product);
+      if (product) {
+        product.stock += item.quantity;
+        await product.save();
+      }
+    }
+
+    order.status = 'cancelled';
+    await order.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'سفارش با موفقیت لغو شد',
+      order
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'خطا در لغو سفارش',
+      error: error.message
+    });
+  }
+};
+
+// @desc    دریافت وضعیت سفارش
+// @route   GET /api/orders/:id/status
+// @access  Private
+exports.getOrderStatus = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id).select('status paymentStatus trackingCode');
+    
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'سفارش یافت نشد'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      status: order.status,
+      paymentStatus: order.paymentStatus,
+      trackingCode: order.trackingCode
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'خطا در دریافت وضعیت سفارش',
+      error: error.message
+    });
+  }
+};
+
+// @desc    پیگیری سفارش با کد رهگیری
+// @route   GET /api/orders/track/:trackingCode
+// @access  Public
+exports.trackOrder = async (req, res) => {
+  try {
+    const order = await Order.findOne({ trackingCode: req.params.trackingCode })
+      .populate('user', 'name');
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'کد رهگیری نامعتبر است'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      order: {
+        id: order._id,
+        status: order.status,
+        trackingCode: order.trackingCode,
+        estimatedDelivery: order.estimatedDelivery,
+        items: order.items,
+        totalPrice: order.totalPrice
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'خطا در پیگیری سفارش',
+      error: error.message
+    });
+  }
+};
+
+// @desc    درخواست بازگشت کالا
+// @route   POST /api/orders/:id/return
+// @access  Private
+exports.requestReturn = async (req, res) => {
+  try {
+    const { reason, items } = req.body;
+
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'سفارش یافت نشد'
+      });
+    }
+
+    if (order.user.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'شما دسترسی به این سفارش ندارید'
+      });
+    }
+
+    if (order.status !== 'delivered') {
+      return res.status(400).json({
+        success: false,
+        message: 'سفارش باید تحویل داده شده باشد تا بتوانید بازگشت کالا درخواست کنید'
+      });
+    }
+
+    order.returnRequest = {
+      requested: true,
+      reason,
+      items,
+      status: 'pending',
+      requestedAt: new Date()
+    };
+
+    await order.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'درخواست بازگشت کالا با موفقیت ثبت شد',
+      order
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'خطا در درخواست بازگشت کالا',
+      error: error.message
+    });
+  }
+};
